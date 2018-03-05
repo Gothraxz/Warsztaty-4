@@ -1,0 +1,37 @@
+<!doctype html>
+
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+
+  <title>Warsztaty-3</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script
+			  src="https://code.jquery.com/jquery-3.3.1.js"
+			  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+			  crossorigin="anonymous"></script>
+  <script src="js/script1.js"></script>
+</head>
+
+<body>
+
+  <form method="post">
+    <label for="isbn">isbn:</label>
+    <input type="numeric" name="isbn"><br>
+    <label for="title">title:</label>
+    <input type="text" name="title"><br>
+    <label for="author">author:</label>
+    <input type="text" name="author"><br>
+    <label for="publisher">publisher:</label>
+    <input type="text" name="publisher"><br>
+    <label for="type">type:</label>
+    <input type="text" name="type"><br>
+    <input id="addBook" type="submit" value="Submit">
+  </form>
+
+  <div id="books"></div>
+
+
+</body>
+</html>
