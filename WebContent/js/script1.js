@@ -1,5 +1,7 @@
 $(document).ready(function() {
 var allBooks = $('#books')
+
+function bookList() {
 $.ajax({
 				url:'http://localhost:8282/books',
 				type:'GET',
@@ -21,7 +23,6 @@ $.ajax({
               $(this).children().toggle();
             });
 
-
             getDetails(json[i].id, detailsDiv);
 
           }
@@ -30,6 +31,9 @@ $.ajax({
           console.log("Main error");
         }
 });
+}
+
+bookList();
 
 function getDetails(id, detailsDiv) {
 
@@ -53,17 +57,39 @@ function getDetails(id, detailsDiv) {
 
 var addBook = $('#addBook');
 
+var book = {
+	/*
+	isbn: $('#isbn').val(),
+	title: $('#title').val(),
+	author: $('#author').val(),
+	publisher: $('#publisher').val(),
+	type: $('#type').val()
+	*/
+
+// dodać pobieranie danych z formularza
+	isbn: "0000",
+	title: "title - hardcoded",
+	author: "author - hardcoded",
+	publisher: "publisher - hardcoded",
+	type: "type - hardcoded"
+
+};
+
 addBook.on('click', function(event) {
-  event.preventDefault();
-  if(validateForm()) {
+  if (validateForm()) {
+		console.log("form validated");
     $.ajax({
-      url:'http://localhost:8282/books/',
+      url:'http://localhost:8282/books',
       type:'POST',
-      dataType:'json',
+      dataType:'application/json',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			data: JSON.stringify(book),
       success: function(json) {
-
-        // doda książkę
-
+				console.log("POST completed");
+				bookList();
       },
       error: function() {
         console.log("Details error");
@@ -73,7 +99,26 @@ addBook.on('click', function(event) {
 });
 
 function validateForm() {
-  // sprawdzi, czy formularz jest poprawny
+  if (!$.isNumeric($('#isbn').val())) {
+		return false;
+	}
+
+	if (!/^([0-9]*[a-zA-Z\-\_\.\,\s]){3,}[0-9]*$/.test($('#title').val())) {
+    return false;
+	}
+
+	if (!/^([0-9]*[a-zA-Z\-\_\.\,\s]){3,}[0-9]*$/.test($('#author').val())) {
+    return false;
+	}
+
+	if (!/^([0-9]*[a-zA-Z\-\_\.\,\s]){3,}[0-9]*$/.test($('#publisher').val())) {
+    return false;
+	}
+
+	if (!/^([0-9]*[a-zA-Z\-\_\.\,\s]){3,}[0-9]*$/.test($('#type').val())) {
+    return false;
+	}
+	return true;
 }
 
 
