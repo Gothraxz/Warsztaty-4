@@ -9,15 +9,26 @@ $.ajax({
 				success: function(json) {
           for (var i = 0; i < json.length; i++) {
             var book = $('<div>');
-            book.text(json[i].title);
-            book.attr('id', json[i].id)
+            book.html(json[i].title + " - <a class='delete' href='http://localhost:8282/books/remove/" + json[i].id + "'>delete</a>");
+            book.attr('id', json[i].id);
 
-            var detailsDiv = $('<div>');
+						$('.delete').on('click', function(event) {
+								event.preventDefault();
+						})
+
+            var detailsDiv = $('<ul>');
             detailsDiv.addClass('details');
             detailsDiv.css('display', 'none');
-            book.append(detailsDiv)
+            book.append(detailsDiv);
 
             allBooks.append(book);
+
+/*
+						var deleteBook = $('<button>');
+						deleteBook.attr('id', "del_" + json[i].id);
+						deleteBook.attr('value', "delete");
+						allBooks.append(deleteBook);
+*/
 
             book.on('click', function() {
               $(this).children().toggle();
@@ -35,6 +46,23 @@ $.ajax({
 
 bookList();
 
+// podpiąć event do wszystkich DIV
+// sprawdzić url
+$('.delete').on('click', function() {
+	$.ajax({
+		url: $(this).attr('href'),
+		type:'DELETE',
+		dataType:'json',
+		success: function(json) {
+			console.log("Delete completed");
+			bookList();
+		},
+		error: function() {
+			console.log("Delete error");
+		}
+	});
+})
+
 function getDetails(id, detailsDiv) {
 
     $.ajax({
@@ -42,11 +70,11 @@ function getDetails(id, detailsDiv) {
       type:'GET',
       dataType:'json',
       success: function(json) {
-        // zmienić widok na listę
-        detailsDiv.append($('<p>').text(json.isbn));
-        detailsDiv.append($('<p>').text(json.author));
-        detailsDiv.append($('<p>').text(json.publisher));
-        detailsDiv.append($('<p>').text(json.type));
+
+        detailsDiv.append($('<li>').text(json.isbn));
+        detailsDiv.append($('<li>').text(json.author));
+        detailsDiv.append($('<li>').text(json.publisher));
+        detailsDiv.append($('<li>').text(json.type));
 
       },
       error: function() {
@@ -57,36 +85,65 @@ function getDetails(id, detailsDiv) {
 
 var addBook = $('#addBook');
 
-var book = {
-	/*
-	isbn: $('#isbn').val(),
-	title: $('#title').val(),
-	author: $('#author').val(),
-	publisher: $('#publisher').val(),
-	type: $('#type').val()
-	*/
+var formIsbn = $('#isbn');
+var formTitle = $('#title');
+var formAuthor = $('#author');
+var formPublisher = $('#publisher');
+var formType = $('#type');
 
-// dodać pobieranie danych z formularza
-	isbn: "0000",
-	title: "title - hardcoded",
-	author: "author - hardcoded",
-	publisher: "publisher - hardcoded",
-	type: "type - hardcoded"
+var bookObj = {
+
+	isbn: "",
+	title: "",
+	author: "",
+	publisher: "",
+	type: ""
 
 };
 
+formIsbn.on('keyup', function() {
+	var val = $(this).val();
+	$('#isbn').attr('value', val);
+	bookObj.isbn = val;
+});
+
+formTitle.on('keyup', function() {
+	var val = $(this).val();
+	$('#title').attr('value', val);
+	bookObj.title = val;
+});
+
+formAuthor.on('keyup', function() {
+	var val = $(this).val();
+	$('#author').attr('value', val);
+	bookObj.author = val;
+});
+
+formPublisher.on('keyup', function() {
+	var val = $(this).val();
+	$('#publisher').attr('value', val);
+	bookObj.publisher = val;
+});
+
+formType.on('keyup', function() {
+	var val = $(this).val();
+	$('#type').attr('value', val);
+	bookObj.type = val;
+});
+
 addBook.on('click', function(event) {
+	console.log("Sumbit clicked");
   if (validateForm()) {
 		console.log("form validated");
     $.ajax({
-      url:'http://localhost:8282/books',
+      url:'http://localhost:8282/books/add',
       type:'POST',
       dataType:'application/json',
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json'
 			},
-			data: JSON.stringify(book),
+			data: JSON.stringify(bookObj),
       success: function(json) {
 				console.log("POST completed");
 				bookList();
@@ -120,7 +177,6 @@ function validateForm() {
 	}
 	return true;
 }
-
 
 
 });
